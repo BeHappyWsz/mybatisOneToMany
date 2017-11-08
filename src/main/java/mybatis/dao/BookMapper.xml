@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mybatis.dao.BookMapper">
+    <resultMap id="bookMap" type="mybatis.domain.Book">
+        <id property="id"            column="bid"/> <!--更改book表id->bid否则只能关联查询出一条信息 -->
+        <result property="author"    column="author"/>
+        <result property="name"      column="name"/>
+        <result property="title"     column="title"/>
+        <result property="price"     column="price"/>
+        <result property="des"       column="des"/>
+        <association property="user" resultMap="mybatis.dao.UserMapper.userMap"/>
+    </resultMap>
+    <sql id="bookSql">
+        id, author, name, title, price, des
+    </sql>
+
+    <select id="findById" resultMap="bookMap" parameterType="int">
+        select <include refid="bookSql"/>
+        from t_book
+        where id = #{id}
+    </select>
+
+    <insert id="insertBook" parameterType="mybatis.domain.Book" keyProperty="id" useGeneratedKeys="true">
+        insert into t_book(id, author, name, title, price, des)
+        values (#{id},#{author},#{name},#{title},#{price},#{des});
+    </insert>
+
+    <insert id="batchInsertBook">
+        insert into t_book(id, author, name, title, price, des,user_id)
+        values
+          <foreach collection="list" item="item" open="" separator="," close="" index="key">
+              (#{item.id},#{item.author},#{item.name},#{item.title},#{item.price},#{item.des},#{item.userId})
+          </foreach>
+    </insert>
+</mapper>

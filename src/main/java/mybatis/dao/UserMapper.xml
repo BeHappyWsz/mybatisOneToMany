@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mybatis.dao.UserMapper">
+    <resultMap id="userMap" type="mybatis.domain.User">
+        <id property="id"           column="id"/>
+        <result property="username" column="username"/>
+        <result property="realName" column="real_name"/>
+        <result property="password" column="password"/>
+        <!--一对多级联-->
+        <collection property="books" resultMap="mybatis.dao.BookMapper.bookMap"/>
+    </resultMap>
+
+    <sql id="userSql" >
+        id, username, real_name,password
+    </sql>
+
+    <select id="findById" parameterType="int" resultMap="userMap">
+        select u.*,b.*
+        from t_user u , t_book b
+        where u.id = b.user_id and u.id = #{id}
+    </select>
+
+    <insert id="insertUser" parameterType="mybatis.domain.User" useGeneratedKeys="true" keyProperty="id">
+        insert into t_user(id, username, real_name, password)
+        values (#{id}, #{username}, #{realName},#{password});
+    </insert>
+</mapper>
