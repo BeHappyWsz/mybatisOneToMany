@@ -10,7 +10,7 @@
         <result property="title"     column="title"/>
         <result property="price"     column="price"/>
         <result property="des"       column="des"/>
-        <association property="user" resultMap="mybatis.dao.UserMapper.userMap"/>
+        <association property="userId" resultMap="mybatis.dao.UserMapper.userMap"/>
     </resultMap>
     <sql id="bookSql">
         id, author, name, title, price, des
@@ -28,10 +28,35 @@
     </insert>
 
     <insert id="batchInsertBook">
-        insert into t_book(id, author, name, title, price, des,user_id)
+        insert into t_book(bid, author, name, title, price, des,user_id)
         values
           <foreach collection="list" item="item" open="" separator="," close="" index="key">
               (#{item.id},#{item.author},#{item.name},#{item.title},#{item.price},#{item.des},#{item.userId})
           </foreach>
     </insert>
+
+    <!--set末尾遇到逗号自动去掉 -->
+    <update id="updateBook" parameterType="mybatis.domain.Book">
+        update t_book
+        set
+        <if test="author != null and author !=''">
+           author = #{author},
+        </if>
+        <if test="name != null and name !=''">
+            name = #{name},
+        </if>
+        <if test="title != null and title !=''">
+           title = #{title},
+        </if>
+        <if test="price != null and price !=''">
+           price = #{price},
+        </if>
+        <if test="des != null and des !=''">
+           des = #{des},
+        </if>
+        <if test="userId != null and userId !=''">
+           user_id = #{userId}
+        </if>
+        where bid = #{id}
+    </update>
 </mapper>

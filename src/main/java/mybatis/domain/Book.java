@@ -1,5 +1,6 @@
 package mybatis.domain;
 
+import com.sun.org.glassfish.gmbal.Description;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,14 +11,12 @@ import java.io.Serializable;
  */
 public class Book implements Serializable {
 
-    @Setter
-    @Getter
-    private User user;
-
+    @Description("关联外键")
     @Setter
     @Getter
     private String userId;
 
+    @Description("主键")
     @Setter
     @Getter
     private int id;

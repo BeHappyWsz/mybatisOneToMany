@@ -10,7 +10,7 @@ public interface UserMapper {
 
     User findById(int id);
 
-    User findByUsername(String username);
-
     int insertUser(User user);
+
+    int updateUser(User user);
 }

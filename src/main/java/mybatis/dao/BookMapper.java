@@ -13,4 +13,6 @@ public interface BookMapper {
     int insertBook(Book book);
 
     int batchInsertBook(List<Book> books);
+
+    int updateBook(Book book);
 }

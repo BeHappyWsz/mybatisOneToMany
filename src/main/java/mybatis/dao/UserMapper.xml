@@ -9,7 +9,14 @@
         <result property="realName" column="real_name"/>
         <result property="password" column="password"/>
         <!--一对多级联-->
-        <collection property="books" resultMap="mybatis.dao.BookMapper.bookMap"/>
+        <collection property="books" ofType="mybatis.domain.Book" column="user_id">
+            <id property="id"            column="bid"/> <!--更改book表id->bid否则只能关联查询出一条信息 -->
+            <result property="author"    column="author"/>
+            <result property="name"      column="name"/>
+            <result property="title"     column="title"/>
+            <result property="price"     column="price"/>
+            <result property="des"       column="des"/>
+        </collection>
     </resultMap>
 
     <sql id="userSql" >
@@ -26,4 +33,21 @@
         insert into t_user(id, username, real_name, password)
         values (#{id}, #{username}, #{realName},#{password});
     </insert>
+
+    <!--利用trim也可用去掉逗号 -->
+    <update id="updateUser" parameterType="mybatis.domain.User" >
+        update t_user
+        <trim prefix="set" suffixOverrides=",">
+            <if test="username != null and username != ''">
+                username = #{username},
+            </if>
+            <if test="realName != null and realName != ''">
+                real_name = #{realName},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password}
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
 </mapper>
