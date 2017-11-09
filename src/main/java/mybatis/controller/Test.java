@@ -1,6 +1,5 @@
 package mybatis.controller;
 
-import com.mysql.jdbc.StringUtils;
 import mybatis.dao.BookMapper;
 import mybatis.dao.UserMapper;
 import mybatis.domain.Book;
