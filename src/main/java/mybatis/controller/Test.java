@@ -25,8 +25,8 @@ public class Test {
         UserMapper mapper = session.getMapper(UserMapper.class);
         BookMapper bookMapper = session.getMapper(BookMapper.class);
         try{
-//            insertUser(mapper);
-//            findUser(mapper);
+            insertUser(mapper);
+            findUser(mapper);
             update(mapper,bookMapper);
         }finally {
             if(session != null){
@@ -36,7 +36,7 @@ public class Test {
     }
 
     public  static void update(UserMapper mapper,BookMapper bookMapper){
-        User user = mapper.findById(28);
+        User user = mapper.findById(29);
         user.setUsername("28");
         int i = mapper.updateUser(user);
 
@@ -52,7 +52,7 @@ public class Test {
     }
 
     public static  void findUser(UserMapper mapper){
-        User user = mapper.findById(28);
+        User user = mapper.findById(29);
         System.out.println(user.toString());
         List<Book> books = user.getBooks();
         for (Book book : books) {
