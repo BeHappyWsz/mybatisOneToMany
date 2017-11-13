@@ -14,20 +14,37 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 
 public class Test {
     private static SqlSession session = null;
     public static void main(String[] args) throws IOException {
+        Logger logger = Logger.getLogger("test");
         String resource = "mybatis.xml";
         InputStream is = Resources.getResourceAsStream(resource);
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(is);
-        session = sqlSessionFactory.openSession();
-        UserMapper mapper = session.getMapper(UserMapper.class);
-        BookMapper bookMapper = session.getMapper(BookMapper.class);
         try{
-            insertUser(mapper);
-            findUser(mapper);
-            update(mapper,bookMapper);
+            logger.info("开启第一个session");
+            session = sqlSessionFactory.openSession();
+            BookMapper bookMapper1 = session.getMapper(BookMapper.class);
+            logger.info("同一个session查询1");
+            Book book = bookMapper1.findById(30);
+            logger.info("同一个session查询2");
+            Book book1 = bookMapper1.findById(30);
+            logger.info("查询2结束");
+            session.commit();
+
+
+            logger.info("开启第二个session");
+            SqlSession session2 = sqlSessionFactory.openSession();
+            BookMapper bookMapper2 = session2.getMapper(BookMapper.class);
+            Book book2 = bookMapper2.findById(30);
+            logger.info("查询结束");
+            session2.commit();
+//            UserMapper mapper = session.getMapper(UserMapper.class);
+//            insertUser(mapper);
+//            findUser(mapper);
+//            update(mapper,bookMapper);
         }finally {
             if(session != null){
                 session.close();

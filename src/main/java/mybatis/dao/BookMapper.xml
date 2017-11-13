@@ -12,14 +12,70 @@
         <result property="des"       column="des"/>
         <association property="userId" resultMap="mybatis.dao.UserMapper.userMap"/>
     </resultMap>
+    <cache eviction="LRU" flushInterval="20000" size="1024" readOnly="true"/>
+    <resultMap id="bookMap1" type="mybatis.domain.Book">
+        <id property="id"            column="id"/> <!--更改book表id->bid否则只能关联查询出一条信息 -->
+        <result property="author"    column="author"/>
+        <result property="name"      column="name"/>
+        <result property="title"     column="title"/>
+        <result property="price"     column="price"/>
+        <result property="des"       column="des"/>
+    </resultMap>
+
     <sql id="bookSql">
-        id, author, name, title, price, des
+        bid, author, name, title, price, des
     </sql>
 
-    <select id="findById" resultMap="bookMap" parameterType="int">
+    <select id="findById" resultMap="bookMap1" parameterType="int">
         select <include refid="bookSql"/>
         from t_book
-        where id = #{id}
+        where bid = #{id}
+    </select>
+
+    <!--<select id="findByMsg" resultMap="bookMap1" parameterType="string">-->
+        <!--select <include refid="bookSql"/>-->
+        <!--from t_book-->
+        <!--where 1 = 1-->
+          <!--<if test="name != null and name != '' ">-->
+              <!--and name = #{name}-->
+          <!--</if>-->
+    <!--</select>-->
+
+    <!--<select id="findByMsg" resultMap="bookMap1" parameterType="string">-->
+        <!--select <include refid="bookSql"/>-->
+        <!--from t_book-->
+        <!--<where>-->
+            <!--<if test="name != null and name != '' ">-->
+              <!--and name = #{name}-->
+            <!--</if>-->
+        <!--</where>-->
+    <!--</select>-->
+
+    <select id="findByMsg" resultMap="bookMap1" parameterType="string">
+        select <include refid="bookSql"/>
+        from t_book
+        <trim prefix="where" prefixOverrides="and" suffix="" suffixOverrides="">
+            <if test="name != null and name !=''">
+                and name = #{name}
+            </if>
+        </trim>
+    </select>
+
+    <select id="findBook" parameterType="mybatis.domain.Book" resultMap="bookMap1">
+        select <include refid="bookSql"/>
+        from t_book
+        where 1 = 1
+          <choose>
+              <when test="name != null and name !='' ">
+                  and name like concat('%',#{name},'%')
+              </when>
+              <when test="author != null and author != '' ">
+                  and author = #{author}
+              </when>
+              <otherwise>
+                  and name is not null
+              </otherwise>
+          </choose>
     </select>
 
     <insert id="insertBook" parameterType="mybatis.domain.Book" keyProperty="id" useGeneratedKeys="true">
@@ -59,4 +115,27 @@
         </if>
         where bid = #{id}
     </update>
+    <!--<update id="updateBook" parameterType="mybatis.domain.Book">-->
+        <!--update t_book-->
+        <!--<trim prefix="set" suffixOverrides=",">-->
+
+        <!--</trim>-->
+        <!--where bid = #{id}-->
+    <!--</update>-->
+    <delete id="batchDelete">
+        delete
+        from t_book
+        where bid in
+          <foreach collection="list" item="item" open="(" separator="," close=")" index="key">
+              #{item}
+          </foreach>
+    </delete>
+
+    <!--可以传入多个查询字段，返回一个list-->
+    <select id="find" resultType="mybatis.domain.Book">
+        <bind name="nameLike" value=" '%' + name + '%' "/> <!--可以多次定义-->
+        select <include refid="bookSql"/>
+        from t_book
+        where name like #{nameLike}
+    </select>
 </mapper>
